@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe de Caja 2026</title>
+<style>
+  :root{
+    --bg:#090d1a; --surface:#111a30; --surface-2:#0d1426; --elev:#17213c;
+    --line:#222c4a; --line-soft:rgba(34,44,74,.5);
+    --txt:#eef1fa; --txt-dim:#aab3c9; --muted:#6f7b96;
+    --accent:#7c83ff; --accent-2:#a78bfa;
+    --pos:#34d399; --neg:#fb7185; --warn:#fbbf24; --sky:#38bdf8;
+    --r:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:
+      radial-gradient(1100px 540px at 12% -12%, #1a2347 0, transparent 58%),
+      radial-gradient(900px 480px at 96% 0%, #131b38 0, transparent 55%),
+      var(--bg);
+    background-attachment:fixed;
+    color:var(--txt); min-height:100vh; padding:34px 22px 40px;
+    line-height:1.45; letter-spacing:.1px;
+  }
+  .wrap{max-width:1200px;margin:0 auto}
+
+  /* ---------- header ---------- */
+  .brandbar{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;
+    margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line-soft)}
+  .neix-logo{height:42px;width:auto;display:block}
+  .neix-logo .lg{fill:var(--txt)} .neix-logo .lr{fill:#c01f3a}
+  header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:18px;margin-bottom:24px}
+  .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+  h1{font-size:27px;font-weight:700;letter-spacing:-.02em}
+  .sub{color:var(--txt-dim);font-size:13.5px;margin-top:5px}
+  .head-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .period{
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    padding:8px 15px;border-radius:999px;font-weight:600;font-size:13px;
+    box-shadow:0 8px 22px rgba(124,131,255,.32);white-space:nowrap
+  }
+  .toggle{
+    appearance:none;border:1px solid var(--line);background:var(--surface);
+    color:var(--txt-dim);font:inherit;font-size:12.5px;font-weight:600;
+    padding:8px 13px;border-radius:999px;cursor:pointer;transition:.18s;
+    display:inline-flex;align-items:center;gap:7px
+  }
+  .toggle:hover{border-color:var(--accent);color:var(--txt)}
+  .toggle[aria-pressed="true"]{background:rgba(124,131,255,.16);border-color:var(--accent);color:var(--txt)}
+  .toggle .pip{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:.18s}
+  .toggle[aria-pressed="true"] .pip{background:var(--accent)}
+
+  /* ---------- kpis ---------- */
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:15px;margin-bottom:18px}
+  .kpi{
+    background:linear-gradient(180deg,var(--surface),var(--surface-2));
+    border:1px solid var(--line);border-radius:var(--r);padding:17px 19px;
+    position:relative;overflow:hidden;transition:border-color .18s,transform .18s
+  }
+  .kpi:hover{border-color:var(--line);transform:translateY(-1px)}
+  .kpi::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--accent)}
+  .kpi.red::before{background:var(--neg)} .kpi.green::before{background:var(--pos)}
+  .kpi.sky::before{background:var(--sky)} .kpi.amber::before{background:var(--warn)}
+  .k-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .k-label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+  .k-val{font-size:24px;font-weight:700;margin-top:9px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .k-sub{color:var(--txt-dim);font-size:12px;margin-top:4px;font-variant-numeric:tabular-nums}
+  .dc{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);
+    background:rgba(255,255,255,.04);border:1px solid var(--line-soft);padding:3px 7px;border-radius:7px;white-space:nowrap}
+  .dc-pos{color:var(--pos);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)}
+  .dc-neg{color:var(--neg);border-color:rgba(251,113,133,.3);background:rgba(251,113,133,.08)}
+
+  /* ---------- cards ---------- */
+  .card{
+    background:linear-gradient(180deg,var(--surface),var(--surface-2));
+    border:1px solid var(--line);border-radius:var(--r);padding:22px 22px 20px
+  }
+  .card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  .card h2{font-size:14px;font-weight:600;display:flex;align-items:center;gap:9px;letter-spacing:.01em}
+  .card h2 .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  .card h2 .dot.sky{background:var(--sky)} .card h2 .dot.neg{background:var(--neg)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+  /* ---------- evolution chart ---------- */
+  .evo{margin-bottom:16px}
+  .evo svg{display:block;width:100%;height:auto;overflow:visible}
+  .evo .grid-line{stroke:var(--line-soft);stroke-width:1}
+  .evo .axis-lab{fill:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+  .evo .x-lab{fill:var(--txt-dim);font-size:11.5px;text-anchor:middle}
+  .evo .area{fill:url(#evoFill)}
+  .evo .line{fill:none;stroke:var(--evo,var(--accent));stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+  .evo .pt{fill:var(--bg);stroke:var(--evo,var(--accent));stroke-width:2.5;transition:r .15s}
+  .evo .guide{stroke:var(--evo,var(--accent));stroke-width:1;stroke-dasharray:3 4;opacity:0}
+  .evo .hot{fill:var(--evo,var(--accent));opacity:0;transition:opacity .15s}
+  .evo .hit{fill:transparent;cursor:crosshair}
+
+  /* ---------- bar lists ---------- */
+  .barrow{display:grid;grid-template-columns:118px 1fr 150px;align-items:center;gap:11px;margin-bottom:9px}
+  .barrow.click{cursor:pointer;border-radius:9px;padding:4px 6px;margin:0 -6px 6px;
+    border:1px solid transparent;background:none;width:calc(100% + 12px);text-align:inherit;font:inherit;color:inherit;transition:.16s}
+  .barrow.click:hover{background:var(--elev);border-color:var(--line-soft)}
+  .barrow.click:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .barrow.click.sel{background:rgba(124,131,255,.12);border-color:var(--accent)}
+  .blab{font-size:12.5px;color:var(--txt-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .barrow.sel .blab{color:var(--txt);font-weight:600}
+  .btrack{background:#0b1124;border:1px solid var(--line-soft);border-radius:7px;height:13px;overflow:hidden}
+  .bfill{height:100%;border-radius:7px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+  .bval{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--txt)}
+  .bpct{color:var(--muted);font-size:11px;margin-left:6px}
+  .totline{display:flex;justify-content:space-between;margin-top:13px;padding-top:13px;border-top:1px solid var(--line);font-weight:700;font-variant-numeric:tabular-nums}
+  .chip{
+    appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--txt-dim);
+    font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:999px;cursor:pointer;transition:.16s
+  }
+  .chip:hover{border-color:var(--accent);color:var(--txt)}
+  .chip:disabled{opacity:.45;cursor:default}
+  .scope{font-size:11.5px;color:var(--muted);font-weight:600}
+
+  /* segmented control */
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface-2)}
+  .seg button{appearance:none;border:0;background:none;color:var(--muted);font:inherit;font-size:12px;font-weight:600;
+    padding:6px 13px;cursor:pointer;transition:.16s}
+  .seg button:hover{color:var(--txt-dim)}
+  .seg button[aria-pressed="true"]{background:rgba(124,131,255,.18);color:var(--txt)}
+
+  /* ---------- table ---------- */
+  .tablewrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px}
+  th{text-align:right;color:var(--muted);font-weight:500;font-size:11px;text-transform:uppercase;
+    letter-spacing:.06em;padding:0 0 11px 10px;border-bottom:1px solid var(--line)}
+  th:first-child{text-align:left}
+  td{padding:10px 0 10px 10px;border-bottom:1px solid var(--line-soft);text-align:right;font-variant-numeric:tabular-nums;color:var(--txt)}
+  td:first-child{text-align:left;color:var(--txt-dim)}
+  tr.delta td{color:var(--muted);font-size:12.5px}
+  tr.delta td.pos{color:var(--pos)} tr.delta td.neg{color:var(--neg)}
+  tr.strong td{font-weight:700;color:var(--txt);border-bottom:none}
+  tr.strong{background:linear-gradient(90deg,rgba(124,131,255,.07),transparent)}
+  td.tot,th.tot{border-left:1px solid var(--line);font-weight:600}
+
+  /* ---------- tooltip ---------- */
+  #tip{position:fixed;z-index:50;pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;
+    background:rgba(10,15,30,.96);border:1px solid var(--line);border-radius:11px;padding:10px 12px;
+    box-shadow:0 14px 36px rgba(0,0,0,.5);font-size:12.5px;max-width:260px;backdrop-filter:blur(8px)}
+  #tip.on{opacity:1;transform:translateY(0)}
+  #tip .tt{font-weight:700;margin-bottom:5px;font-size:12px}
+  #tip .tr{display:flex;justify-content:space-between;gap:18px;color:var(--txt-dim);font-variant-numeric:tabular-nums}
+  #tip .tr b{color:var(--txt);font-weight:600}
+  #tip .sw{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:middle}
+
+  footer{color:var(--muted);font-size:12px;margin-top:22px;text-align:center;line-height:1.7}
+
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brandbar">
+    <svg class="neix-logo" viewBox="0 0 1080 362" role="img" aria-label="NEIX">
+      <polygon class="lr" points="903.6 134.65 941.09 78.2 985.97 78.2 948.48 134.65 903.6 134.65"/>
+      <rect class="lg" x="660.23" y="78.2" width="44.88" height="215.67"/>
+      <polygon class="lg" points="542.86 115.16 542.86 78.18 405.26 78.18 405.26 78.2 394.59 78.2 394.59 293.87 439.47 293.87 439.47 293.86 542.86 293.86 542.86 256.88 439.47 256.88 439.47 202.62 529.47 202.62 529.47 165.64 439.47 165.64 439.47 115.16 542.86 115.16"/>
+      <polygon class="lg" points="277.26 293.08 277.26 78.2 235.28 78.2 235.28 230 134.24 78.2 89.36 78.2 89.38 78.23 89.3 78.2 89.3 293.98 131.28 293.98 131.28 141.19 232.91 293.87 277.79 293.87 277.26 293.08"/>
+      <polygon class="lg" points="989.85 293.87 846.31 78.2 801.42 78.2 869.57 180.59 794.17 293.87 839.05 293.87 892.01 214.31 944.97 293.87 989.85 293.87"/>
+    </svg>
+    <div class="head-tools">
+      <button class="toggle" id="compactBtn" aria-pressed="false"><span class="pip"></span>En millones</button>
+      <div class="period" id="period">Período</div>
+    </div>
+  </div>
+  <header>
+    <div>
+      <div class="eyebrow">Tesorería · Bancos gravados</div>
+      <h1>Informe de Caja 2026</h1>
+      <div class="sub">Movimiento de caja acumulado del año · pesos y dólar MEP</div>
+    </div>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <div class="card evo">
+    <div class="card-head">
+      <h2><span class="dot neg" id="evoDot"></span><span id="evoTitle">Evolución de egresos gravados por mes</span></h2>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="scope" id="evoNote"></span>
+        <button class="chip" id="evoResetChip" hidden>← Egresos gravados</button>
+      </div>
+    </div>
+    <div id="evochart"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-head"><h2><span class="dot neg"></span>Egresos gravados por mes</h2><span class="scope">Tocá un mes para ver su detalle →</span></div>
+      <div id="bymonth"></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="dot"></span>Egresos por subconcepto</h2>
+        <button class="chip" id="scopeChip" disabled>Año completo</button>
+      </div>
+      <div class="scope" style="margin:-4px 0 14px">Tocá un subconcepto para ver su detalle ↑</div>
+      <div id="bysub"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2><span class="dot sky"></span>Resumen mensual</h2>
+      <div class="seg" role="group" aria-label="Moneda de la tabla">
+        <button id="ccyArs" aria-pressed="true">AR$</button>
+        <button id="ccyUsd" aria-pressed="false">US$ MEP</button>
+      </div>
+    </div>
+    <div class="tablewrap" id="tablewrap"></div>
+  </div>
+
+  <footer id="foot"></footer>
+</div>
+<div id="tip"></div>
+
+<script>
+/* ====== DATOS — PARA AGREGAR UN MES, copiá un bloque y sumalo al final del array ======
+   Cada mes: mes, ini/exenta/ing/egr/fin = [pesos, dolarMEP], detalle = {subconcepto: pesos}      */
+const MESES = [
+    { mes:"Enero",
+      ini:[10667922.17,545.07], exenta:[1441750000.0,179870.0],
+      ing:[8956497.42,579.06], egr:[-1448485891.66,-180355.54],
+      fin:[12888527.93,638.59],
+      detalle:{"SUELDOS":829493927.0,"AFIP":215631631.41,"GASTO X OP MESA":125178231.13,"PROVEEDORES":99986656.43,"PRODUCTORES":73429607.09,"ALQUILERES Y EXP":38012265.85,"AMEX":22600000.0,"NUBI":18823056.0,"SERVICIOS":9425911.08,"GS E IMP BANCARIOS":9085014.23,"VISA":6819591.44} },
+    { mes:"Febrero",
+      ini:[12888527.93,638.59], exenta:[1368600000.0,174750.0],
+      ing:[34424636.94,692.67], egr:[-1406522998.57,-174084.35],
+      fin:[9390166.3,1996.91],
+      detalle:{"SUELDOS":247669992.0,"AFIP":718936201.9,"PROVEEDORES":135469211.71,"GASTO X OP MESA":108848261.24,"PRODUCTORES":81628724.37,"ALQUILERES Y EXP":41394374.47,"AMEX":28665763.47,"NUBI":18763558.0,"SERVICIOS":10774457.68,"GS E IMP BANCARIOS":8873116.85,"VISA":5499336.88} },
+    { mes:"Marzo",
+      ini:[9138744.06,1996.91], exenta:[798200000.0,140300.0],
+      ing:[104167387.36,730.68], egr:[-909375721.55,-136154.59],
+      fin:[2130409.87,6873.0],
+      detalle:{"SUELDOS":239572439.0,"AFIP":166665540.07,"PROVEEDORES":139124283.17,"GASTO X OP MESA":134189143.9,"PRODUCTORES":104121870.64,"ALQUILERES Y EXP":37619879.73,"AMEX":32666169.54,"NUBI":20630732.0,"AJUSTE STA FE":14183232.67,"SERVICIOS":9103478.43,"GS E IMP BANCARIOS":6201046.62,"VISA":5297905.78} },
+    { mes:"Abril",
+      ini:[2130409.87,6873.0], exenta:[995800000.0,203300.0],
+      ing:[31963069.9,655.18], egr:[-1022705854.23,-207982.97],
+      fin:[7187625.54,2845.21],
+      detalle:{"SUELDOS":298882240.0,"PRODUCTORES":96996758.1,"AFIP":168515400.44,"GASTO X OP MESA":228151415.24,"PROVEEDORES":97606616.39,"ALQUILERES Y EXP":51039214.23,"NUBI":27525824.82,"AMEX":24784211.13,"SERVICIOS":14485245.5,"VISA":8089471.18,"GS E IMP BANCARIOS":6629457.2} },
+    { mes:"Mayo",
+      ini:[7187625.54,2845.21], exenta:[979640000.0,189860.0],
+      ing:[30469862.23,955.03], egr:[-1012855539.81,-190826.12],
+      fin:[4441947.96,2834.12],
+      detalle:{"GASTO X OP MESA":279631480.66,"SUELDOS":255087004.0,"AFIP":166921989.43,"PROVEEDORES":99152346.18,"PRODUCTORES":84970569.66,"ALQUILERES Y EXP":49646744.74,"NUBI":27033470.0,"AMEX":19816862.97,"SERVICIOS":15119648.69,"VISA":9165584.8,"GS E IMP BANCARIOS":6309838.68} }
+];
+const ANIO = 2026;
+/* ====================================================================================== */
+
+const palette=["#7c83ff","#a78bfa","#ec4899","#fb7185","#f59e0b","#34d399","#14b8a6","#06b6d4","#3b82f6","#c084fc","#84cc16","#64748b"];
+const N=MESES.length, last=MESES[N-1], prev=N>1?MESES[N-2]:null;
+const state={compact:false, ccy:'ars', sel:null, subSel:null};
+const tip=document.getElementById('tip');
+
+/* ---------- formato ---------- */
+const abs=(n,d=0)=>Math.abs(n).toLocaleString("es-AR",{minimumFractionDigits:d,maximumFractionDigits:d});
+function fmtP(n){const neg=n<0,s="$"+abs(Math.round(n));return neg?"("+s+")":s;}
+function fmtPc(n){if(Math.abs(n)>=1e6){const v=n/1e6,neg=v<0,s="$"+Math.abs(v).toLocaleString("es-AR",{minimumFractionDigits:1,maximumFractionDigits:1})+" M";return neg?"("+s+")":s;}return fmtP(n);}
+const money=n=>state.compact?fmtPc(n):fmtP(n);
+function fmtU(n){const neg=n<0,s="US$ "+abs(n,2);return neg?"("+s+")":s;}
+
+/* valor segun moneda activa de la tabla: pair=[pesos,usd] */
+const cell=pair=>state.ccy==='usd'?fmtU(pair[1]):money(pair[0]);
+
+/* ---------- delta mes a mes ---------- */
+function deltaChip(cur,prv,semantic){
+  if(prv==null||prv===0)return'';
+  const d=(cur-prv)/Math.abs(prv)*100, dir=d>0?'up':d<0?'down':'flat';
+  const arrow=dir==='up'?'▲':dir==='down'?'▼':'—';
+  let cls='dc';
+  if(semantic)cls+=dir==='up'?' dc-pos':dir==='down'?' dc-neg':'';
+  return `<span class="${cls}" title="vs ${prev?prev.mes:''}">${arrow} ${abs(Math.abs(d),1)}%</span>`;
+}
+
+const sum=f=>MESES.reduce((a,m)=>a+f(m),0);
+const egrYTD=sum(m=>m.egr[0]), ingYTD=sum(m=>m.ing[0]), exeYTD=sum(m=>m.exenta[0]);
+
+document.getElementById("period").textContent="Período · "+MESES[0].mes+"–"+last.mes+" "+ANIO;
+
+/* ---------- KPIs ---------- */
+function renderKpis(){
+  document.getElementById("kpis").innerHTML=`
+  <div class="kpi red">
+    <div class="k-top"><span class="k-label">Egresos gravados · YTD</span>${prev?deltaChip(-last.egr[0],-prev.egr[0],false):''}</div>
+    <div class="k-val">${money(-egrYTD)}</div><div class="k-sub">${N} meses · prom. ${money(-egrYTD/N)}</div></div>
+  <div class="kpi green">
+    <div class="k-top"><span class="k-label">Ingresos gravados · YTD</span>${prev?deltaChip(last.ing[0],prev.ing[0],false):''}</div>
+    <div class="k-val">${money(ingYTD)}</div><div class="k-sub">${N} meses · prom. ${money(ingYTD/N)}</div></div>
+  <div class="kpi sky">
+    <div class="k-top"><span class="k-label">Pedidos caja mesa · YTD</span>${prev?deltaChip(last.exenta[0],prev.exenta[0],false):''}</div>
+    <div class="k-val">${money(exeYTD)}</div><div class="k-sub">${N} meses · prom. ${money(exeYTD/N)}</div></div>
+  <div class="kpi amber">
+    <div class="k-top"><span class="k-label">Saldo final · ${last.mes}</span>${prev?deltaChip(last.fin[0],prev.fin[0],true):''}</div>
+    <div class="k-val">${money(last.fin[0])}</div><div class="k-sub">${fmtU(last.fin[1])}</div></div>`;
+}
+
+/* ---------- tooltip helpers ---------- */
+function showTip(html,x,y){tip.innerHTML=html;tip.classList.add('on');moveTip(x,y);}
+function moveTip(x,y){const w=tip.offsetWidth,h=tip.offsetHeight,pad=14;
+  let nx=x+pad,ny=y-h-pad;if(nx+w>innerWidth-8)nx=x-w-pad;if(ny<8)ny=y+pad;
+  tip.style.left=nx+'px';tip.style.top=ny+'px';}
+function hideTip(){tip.classList.remove('on');}
+
+/* ---------- gráfico de evolución (egresos gravados o subconcepto) ---------- */
+function evoSeries(){
+  if(state.subSel) return {vals:MESES.map(m=>m.detalle[state.subSel]||0), label:state.subSel, sub:true};
+  return {vals:MESES.map(m=>-m.egr[0]), label:'Egresos gravados', sub:false};
+}
+function renderEvo(){
+  const S=evoSeries(), vals=S.vals, stroke=S.sub?'var(--accent)':'var(--neg)';
+  const W=900,H=300,pL=66,pR=22,pT=22,pB=38,pw=W-pL-pR,ph=H-pT-pB;
+  const mn=Math.min(...vals), mx=Math.max(...vals); let rng=mx-mn||1;
+  let lo=Math.max(0,mn-rng*0.18), hi=mx+rng*0.18; if(hi<=lo)hi=lo+1;
+  const X=i=>pL+pw*(N>1?i/(N-1):0.5), Y=v=>pT+ph*(1-(v-lo)/(hi-lo));
+  const pts=vals.map((v,i)=>[X(i),Y(v)]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=line+` L${pts[N-1][0].toFixed(1)} ${(pT+ph)} L${pts[0][0].toFixed(1)} ${(pT+ph)} Z`;
+  const ticks=[hi,lo+(hi-lo)*0.5,lo].map(v=>({v,y:Y(v)}));
+  document.getElementById("evochart").innerHTML=`
+  <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolución de ${S.label} por mes" style="--evo:${stroke}">
+    <defs><linearGradient id="evoFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${stroke}" stop-opacity=".26"/>
+      <stop offset="1" stop-color="${stroke}" stop-opacity="0"/></linearGradient></defs>
+    ${ticks.map(t=>`<line class="grid-line" x1="${pL}" y1="${t.y.toFixed(1)}" x2="${W-pR}" y2="${t.y.toFixed(1)}"/>
+      <text class="axis-lab" x="${pL-10}" y="${(t.y+4).toFixed(1)}" text-anchor="end">${fmtPc(t.v)}</text>`).join('')}
+    <path class="area" d="${area}"/>
+    <path class="line" id="evoLine" d="${line}"/>
+    ${MESES.map((m,i)=>`<text class="x-lab" x="${X(i).toFixed(1)}" y="${H-12}">${m.mes.slice(0,3)}</text>`).join('')}
+    <line class="guide" id="evoGuide" y1="${pT}" y2="${pT+ph}"/>
+    ${pts.map((p,i)=>`<circle class="pt" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5"/>`).join('')}
+    <circle class="hot" id="evoHot" r="6"/>
+    <rect class="hit" id="evoHit" x="${pL}" y="${pT}" width="${pw}" height="${ph}"/>
+  </svg>`;
+
+  const svg=document.querySelector('#evochart svg'), hit=document.getElementById('evoHit'),
+        guide=document.getElementById('evoGuide'), hot=document.getElementById('evoHot');
+  function at(clientX){
+    const r=svg.getBoundingClientRect(), sx=(clientX-r.left)/r.width*W;
+    let i=Math.round((sx-pL)/(pw||1)*(N-1));return Math.max(0,Math.min(N-1,i));
+  }
+  function move(e){
+    const cx=(e.touches?e.touches[0].clientX:e.clientX);
+    const i=at(cx),m=MESES[i],p=pts[i],v=vals[i];
+    guide.setAttribute('x1',p[0]);guide.setAttribute('x2',p[0]);guide.style.opacity=.6;
+    hot.setAttribute('cx',p[0]);hot.setAttribute('cy',p[1]);hot.style.opacity=1;
+    const pv=i>0?vals[i-1]:null;
+    const dv=(pv!=null&&pv!==0)?(v-pv)/Math.abs(pv)*100:null;
+    const share=S.sub?(v/(-m.egr[0])*100):(v/(-egrYTD)*100);
+    showTip(`<div class="tt">${S.label} · ${m.mes} ${ANIO}</div>
+      <div class="tr"><span>Monto</span><b>${money(v)}</b></div>
+      ${dv!=null?`<div class="tr"><span>vs ${MESES[i-1].mes}</span><b style="color:${dv>=0?'var(--pos)':'var(--neg)'}">${dv>=0?'+':'−'}${abs(Math.abs(dv),1)}%</b></div>`:''}
+      <div class="tr"><span>${S.sub?'% del egreso del mes':'% del año'}</span><b>${share.toFixed(1)}%</b></div>`,
+      e.touches?e.touches[0].clientX:e.clientX, e.touches?e.touches[0].clientY:e.clientY);
+  }
+  hit.addEventListener('mousemove',move);
+  hit.addEventListener('touchmove',e=>{move(e);},{passive:true});
+  hit.addEventListener('mouseleave',()=>{guide.style.opacity=0;hot.style.opacity=0;hideTip();});
+  hit.addEventListener('touchend',()=>{guide.style.opacity=0;hot.style.opacity=0;hideTip();});
+
+  // animación de trazo
+  const ln=document.getElementById('evoLine');
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const L=ln.getTotalLength();ln.style.strokeDasharray=L;ln.style.strokeDashoffset=L;
+    ln.getBoundingClientRect();ln.style.transition='stroke-dashoffset .9s ease';ln.style.strokeDashoffset=0;
+  }
+
+  const total=vals.reduce((a,v)=>a+v,0);
+  document.getElementById('evoTitle').textContent=S.sub?("Evolución · "+S.label):"Evolución de egresos gravados por mes";
+  document.getElementById('evoDot').style.background=stroke;
+  document.getElementById('evoNote').textContent=S.sub
+    ? `Total ${fmtPc(total)} · ${(total/(-egrYTD)*100).toFixed(1)}% del egreso del período`
+    : `Total ${fmtPc(total)} · prom. mensual ${fmtPc(total/N)}`;
+  const reset=document.getElementById('evoResetChip');
+  reset.hidden=!S.sub;
+}
+
+/* ---------- egresos por mes (clickeable) ---------- */
+function renderByMonth(){
+  const maxm=Math.max(...MESES.map(m=>-m.egr[0]));
+  document.getElementById("bymonth").innerHTML=MESES.map((m,i)=>{
+    const v=-m.egr[0], sel=state.sel===i;
+    return `<button type="button" class="barrow click ${sel?'sel':''}" data-i="${i}" aria-pressed="${sel}">
+      <span class="blab">${m.mes}</span>
+      <span class="btrack"><span class="bfill" style="width:${(v/maxm*100).toFixed(1)}%;background:${palette[i%palette.length]}"></span></span>
+      <span class="bval">${money(v)}</span></button>`;
+  }).join("");
+  document.querySelectorAll('#bymonth .barrow').forEach(b=>{
+    const i=+b.dataset.i;
+    b.addEventListener('click',()=>{state.sel=state.sel===i?null:i;renderByMonth();renderBySub();});
+    b.addEventListener('mousemove',e=>{const m=MESES[i],v=-m.egr[0];
+      showTip(`<div class="tt">${m.mes} ${ANIO}</div>
+        <div class="tr"><span>Egresos gravados</span><b>${money(v)}</b></div>
+        <div class="tr"><span>% del año</span><b>${(v/-egrYTD*100).toFixed(1)}%</b></div>
+        <div class="tr"><span>Ingresos</span><b>${money(m.ing[0])}</b></div>`,e.clientX,e.clientY);});
+    b.addEventListener('mouseleave',hideTip);
+  });
+}
+
+/* ---------- egresos por subconcepto (según mes seleccionado) ---------- */
+function renderBySub(){
+  let data,total,scopeLabel;
+  if(state.sel===null){
+    const tot={};MESES.forEach(m=>{for(const k in m.detalle)tot[k]=(tot[k]||0)+m.detalle[k];});
+    data=Object.entries(tot);scopeLabel="Año completo";
+  }else{
+    const m=MESES[state.sel];data=Object.entries(m.detalle);scopeLabel=m.mes+" "+ANIO;
+  }
+  data.sort((a,b)=>b[1]-a[1]);
+  total=data.reduce((a,x)=>a+x[1],0);const maxs=data[0][1];
+  document.getElementById("bysub").innerHTML=data.map((x,i)=>{
+    const pct=x[1]/total*100, sel=state.subSel===x[0];
+    return `<button type="button" class="barrow sub click ${sel?'sel':''}" data-k="${x[0]}" data-v="${x[1]}" data-p="${pct.toFixed(1)}" aria-pressed="${sel}">
+      <span class="blab" title="${x[0]}">${x[0]}</span>
+      <span class="btrack"><span class="bfill" style="width:${(x[1]/maxs*100).toFixed(1)}%;background:${palette[i%palette.length]}"></span></span>
+      <span class="bval">${money(x[1])}<span class="bpct">${pct.toFixed(1)}%</span></span></button>`;
+  }).join("")
+  +`<div class="totline"><span>Total egresos · ${scopeLabel}</span><span>${money(total)}</span></div>`;
+
+  document.querySelectorAll('#bysub .barrow.sub').forEach(r=>{
+    const k=r.dataset.k;
+    r.addEventListener('click',()=>{
+      const sel=state.subSel===k?null:k;
+      state.subSel=sel;renderEvo();renderBySub();
+      if(sel){
+        const beh=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+        document.querySelector('.evo').scrollIntoView({behavior:beh,block:'start'});
+      }
+    });
+    r.addEventListener('mousemove',e=>showTip(
+      `<div class="tt">${k}</div>
+       <div class="tr"><span>Monto</span><b>${money(+r.dataset.v)}</b></div>
+       <div class="tr"><span>Participación</span><b>${r.dataset.p}%</b></div>
+       <div class="tr"><span>Alcance</span><b>${scopeLabel}</b></div>`,e.clientX,e.clientY));
+    r.addEventListener('mouseleave',hideTip);
+  });
+
+  const chip=document.getElementById('scopeChip');
+  chip.textContent=state.sel===null?"Año completo":"✕ "+MESES[state.sel].mes;
+  chip.disabled=state.sel===null;
+}
+document.getElementById('scopeChip').addEventListener('click',()=>{state.sel=null;renderByMonth();renderBySub();});
+document.getElementById('evoResetChip').addEventListener('click',()=>{state.subSel=null;renderEvo();renderBySub();});
+
+/* ---------- tabla mensual ---------- */
+function renderTable(){
+  const filas=[
+    ["Saldo inicial",       m=>m.ini,    'first'],
+    ["Pedidos caja mesa",   m=>m.exenta, 'sum'],
+    ["Ingresos gravados",   m=>m.ing,    'sum'],
+    ["Egresos gravados",    m=>m.egr,    'sum'],
+    ["Saldo final gravado", m=>m.fin,    'strong'],
+  ];
+  const thead="<tr><th>Concepto</th>"+MESES.map(m=>"<th>"+m.mes.slice(0,3)+"</th>").join("")+"</tr>";
+  const tbody=filas.map(([lb,f,cls])=>{
+    const cells=MESES.map(m=>"<td>"+cell(f(m))+"</td>").join("");
+    return `<tr class="${cls==='strong'?'strong':''}"><td>${lb}</td>${cells}</tr>`;
+  }).join("");
+  document.getElementById("tablewrap").innerHTML="<table>"+thead+tbody+"</table>";
+}
+
+/* ---------- controles ---------- */
+document.getElementById('compactBtn').addEventListener('click',e=>{
+  state.compact=!state.compact;e.currentTarget.setAttribute('aria-pressed',state.compact);
+  renderKpis();renderEvo();renderByMonth();renderBySub();renderTable();
+});
+function setCcy(c){state.ccy=c;
+  document.getElementById('ccyArs').setAttribute('aria-pressed',c==='ars');
+  document.getElementById('ccyUsd').setAttribute('aria-pressed',c==='usd');
+  renderTable();}
+document.getElementById('ccyArs').addEventListener('click',()=>setCcy('ars'));
+document.getElementById('ccyUsd').addEventListener('click',()=>setCcy('usd'));
+
+/* ---------- footer + init ---------- */
+document.getElementById("foot").innerHTML=
+  "Generado a partir del Informe de Caja "+ANIO+" · valores en pesos y dólar MEP · último mes cargado: "+last.mes+" "+ANIO;
+
+renderKpis();renderEvo();renderByMonth();renderBySub();renderTable();
+addEventListener('resize',()=>{if(tip.classList.contains('on'))hideTip();});
+</script>
+</body>
+</html>
