@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe de Caja 2026</title>
+<style>
+  :root{--bg:#0b1020;--surface:#151c32;--surface2:#1b2340;--line:#27304f;--txt:#e8ecf6;--muted:#94a3b8;
+    --accent:#6366f1;--green:#10b981;--red:#f43f5e;--amber:#f59e0b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 20% -10%,#1c2546 0,transparent 60%),var(--bg);
+    color:var(--txt);min-height:100vh;padding:32px 20px;line-height:1.45}
+  .wrap{max-width:1180px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:26px}
+  h1{font-size:26px;font-weight:700}
+  .sub{color:var(--muted);font-size:14px;margin-top:6px}
+  .period{background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:8px 16px;border-radius:999px;
+    font-weight:600;font-size:14px;box-shadow:0 6px 20px rgba(99,102,241,.35)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:22px}
+  .kpi{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);
+    border-radius:16px;padding:18px 20px;position:relative;overflow:hidden}
+  .kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+  .kpi.red::before{background:var(--red)} .kpi.green::before{background:var(--green)} .kpi.amber::before{background:var(--amber)}
+  .kpi .k-label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+  .kpi .k-val{font-size:23px;font-weight:700;margin-top:8px}
+  .kpi .k-sub{color:var(--muted);font-size:12px;margin-top:4px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);
+    border-radius:16px;padding:22px}
+  .card h2{font-size:15px;font-weight:600;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+  .card h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:right;color:var(--muted);font-weight:500;font-size:11.5px;text-transform:uppercase;
+    letter-spacing:.4px;padding:0 0 10px 8px;border-bottom:1px solid var(--line)}
+  th:first-child{text-align:left}
+  td{padding:9px 0 9px 8px;border-bottom:1px solid rgba(39,48,79,.5);text-align:right;font-variant-numeric:tabular-nums}
+  td:first-child{text-align:left;color:var(--muted)}
+  tr.strong td{font-weight:700;color:var(--txt)}
+  .barrow{display:grid;grid-template-columns:108px 1fr 132px;align-items:center;gap:10px;margin-bottom:9px}
+  .blab{font-size:12.5px}
+  .btrack{background:#0e1428;border-radius:7px;height:13px;overflow:hidden}
+  .bfill{height:100%;border-radius:7px}
+  .bval{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums}
+  .bpct{color:var(--muted);font-size:11px;margin-left:6px}
+  .totline{display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-weight:700}
+  footer{color:var(--muted);font-size:12px;margin-top:24px;text-align:center;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Informe de Caja 2026</h1><div class="sub">Bancos gravados · acumulado del año</div></div>
+    <div class="period" id="period">Período</div>
+  </header>
+  <section class="kpis" id="kpis"></section>
+  <div class="grid">
+    <div class="card"><h2><span class="dot"></span>Egresos gravados por mes</h2><div id="bymonth"></div></div>
+    <div class="card"><h2><span class="dot"></span>Egresos por subconcepto · Total año</h2><div id="bysub"></div></div>
+  </div>
+  <div class="card"><h2><span class="dot"></span>Resumen mensual · Pesos</h2><div id="tablewrap"></div></div>
+  <footer id="foot"></footer>
+</div>
+
+<script>
+/* ====== DATOS — PARA AGREGAR UN MES, copiá un bloque y sumalo al final del array ======
+   Cada mes: mes, ini/exenta/ing/egr/fin = [pesos, dolarMEP], detalle = {subconcepto: pesos}      */
+const MESES = [
+    { mes:"Enero",
+      ini:[10667922.17,545.07], exenta:[1441750000.0,179870.0],
+      ing:[8956497.42,579.06], egr:[-1448485891.66,-180355.54],
+      fin:[12888527.93,638.59],
+      detalle:{"SUELDOS":829493927.0,"AFIP":215631631.41,"GASTO X OP MESA":125178231.13,"PROVEEDORES":99986656.43,"PRODUCTORES":73429607.09,"ALQUILERES Y EXP":38012265.85,"AMEX":22600000.0,"NUBI":18823056.0,"SERVICIOS":9425911.08,"GS E IMP BANCARIOS":9085014.23,"VISA":6819591.44} },
+    { mes:"Febrero",
+      ini:[12888527.93,638.59], exenta:[1368600000.0,174750.0],
+      ing:[34424636.94,692.67], egr:[-1406522998.57,-174084.35],
+      fin:[9390166.3,1996.91],
+      detalle:{"SUELDOS":247669992.0,"AFIP":718936201.9,"PROVEEDORES":135469211.71,"GASTO X OP MESA":108848261.24,"PRODUCTORES":81628724.37,"ALQUILERES Y EXP":41394374.47,"AMEX":28665763.47,"NUBI":18763558.0,"SERVICIOS":10774457.68,"GS E IMP BANCARIOS":8873116.85,"VISA":5499336.88} },
+    { mes:"Marzo",
+      ini:[9138744.06,1996.91], exenta:[798200000.0,140300.0],
+      ing:[104167387.36,730.68], egr:[-909375721.55,-136154.59],
+      fin:[2130409.87,6873.0],
+      detalle:{"SUELDOS":239572439.0,"AFIP":166665540.07,"PROVEEDORES":139124283.17,"GASTO X OP MESA":134189143.9,"PRODUCTORES":104121870.64,"ALQUILERES Y EXP":37619879.73,"AMEX":32666169.54,"NUBI":20630732.0,"AJUSTE STA FE":14183232.67,"SERVICIOS":9103478.43,"GS E IMP BANCARIOS":6201046.62,"VISA":5297905.78} },
+    { mes:"Abril",
+      ini:[2130409.87,6873.0], exenta:[995800000.0,203300.0],
+      ing:[31963069.9,655.18], egr:[-1022705854.23,-207982.97],
+      fin:[7187625.54,2845.21],
+      detalle:{"SUELDOS":298882240.0,"PRODUCTORES":96996758.1,"AFIP":168515400.44,"GASTO X OP MESA":228151415.24,"PROVEEDORES":97606616.39,"ALQUILERES Y EXP":51039214.23,"NUBI":27525824.82,"AMEX":24784211.13,"SERVICIOS":14485245.5,"VISA":8089471.18,"GS E IMP BANCARIOS":6629457.2} },
+    { mes:"Mayo",
+      ini:[7187625.54,2845.21], exenta:[979640000.0,189860.0],
+      ing:[30469862.23,955.03], egr:[-1012855539.81,-190826.12],
+      fin:[4441947.96,2834.12],
+      detalle:{"GASTO X OP MESA":279631480.66,"SUELDOS":255087004.0,"AFIP":166921989.43,"PROVEEDORES":99152346.18,"PRODUCTORES":84970569.66,"ALQUILERES Y EXP":49646744.74,"NUBI":27033470.0,"AMEX":19816862.97,"SERVICIOS":15119648.69,"VISA":9165584.8,"GS E IMP BANCARIOS":6309838.68} }
+];
+const ANIO = 2026;
+/* ====================================================================================== */
+
+const palette=["#6366f1","#8b5cf6","#ec4899","#f43f5e","#f59e0b","#10b981","#14b8a6","#06b6d4","#3b82f6","#a855f7","#84cc16","#64748b"];
+const fmtP=n=>{let neg=n<0;n=Math.abs(Math.round(n));let s=n.toLocaleString("es-AR");return (neg?"($":"$")+s+(neg?")":"")};
+const fmtU=n=>{let neg=n<0;let s=Math.abs(n).toLocaleString("es-AR",{minimumFractionDigits:2,maximumFractionDigits:2});return (neg?"(US$ ":"US$ ")+s+(neg?")":"")};
+
+const sum=f=>MESES.reduce((a,m)=>a+f(m),0);
+const egrYTD=sum(m=>m.egr[0]), ingYTD=sum(m=>m.ing[0]), exeYTD=sum(m=>m.exenta[0]);
+const last=MESES[MESES.length-1];
+
+document.getElementById("period").textContent="Período · "+MESES[0].mes+"–"+last.mes+" "+ANIO;
+
+document.getElementById("kpis").innerHTML=`
+  <div class="kpi red"><div class="k-label">Egresos gravados · YTD</div><div class="k-val">${fmtP(-egrYTD)}</div><div class="k-sub">${MESES.length} meses</div></div>
+  <div class="kpi green"><div class="k-label">Ingresos gravados · YTD</div><div class="k-val">${fmtP(ingYTD)}</div><div class="k-sub">${MESES.length} meses</div></div>
+  <div class="kpi"><div class="k-label">Egresos exenta mesa · YTD</div><div class="k-val">${fmtP(exeYTD)}</div><div class="k-sub">${MESES.length} meses</div></div>
+  <div class="kpi amber"><div class="k-label">Saldo final · ${last.mes}</div><div class="k-val">${fmtP(last.fin[0])}</div><div class="k-sub">${fmtU(last.fin[1])}</div></div>`;
+
+// egresos por mes
+let maxm=Math.max(...MESES.map(m=>-m.egr[0]));
+document.getElementById("bymonth").innerHTML=MESES.map((m,i)=>{
+  let v=-m.egr[0];
+  return `<div class="barrow"><div class="blab">${m.mes}</div>
+    <div class="btrack"><div class="bfill" style="width:${(v/maxm*100).toFixed(1)}%;background:${palette[i%palette.length]}"></div></div>
+    <div class="bval">${fmtP(v)}</div></div>`;
+}).join("");
+
+// egresos por subconcepto (total año)
+let tot={};
+MESES.forEach(m=>{for(const k in m.detalle){tot[k]=(tot[k]||0)+m.detalle[k];}});
+let arr=Object.entries(tot).sort((a,b)=>b[1]-a[1]);
+let totalEgr=arr.reduce((a,x)=>a+x[1],0), maxs=arr[0][1];
+document.getElementById("bysub").innerHTML=arr.map((x,i)=>{
+  let pct=x[1]/totalEgr*100;
+  return `<div class="barrow"><div class="blab">${x[0]}</div>
+    <div class="btrack"><div class="bfill" style="width:${(x[1]/maxs*100).toFixed(1)}%;background:${palette[i%palette.length]}"></div></div>
+    <div class="bval">${fmtP(x[1])}<span class="bpct">${pct.toFixed(1)}%</span></div></div>`;
+}).join("")+`<div class="totline"><span>Total egresos</span><span>${fmtP(totalEgr)}</span></div>`;
+
+// tabla mensual
+const filas=[["Saldo inicial",m=>m.ini[0],0,"first"],["Egresos exenta mesa",m=>m.exenta[0],0,"sum"],
+  ["Ingresos gravados",m=>m.ing[0],0,"sum"],["Egresos gravados",m=>m.egr[0],0,"sum"],["Saldo final gravado",m=>m.fin[0],1,"last"]];
+let thead="<tr><th>Concepto</th>"+MESES.map(m=>"<th>"+m.mes.slice(0,3)+"</th>").join("")+"<th>Total</th></tr>";
+let tbody=filas.map(([lb,f,st,ty])=>{
+  let cells=MESES.map(m=>"<td>"+fmtP(f(m))+"</td>").join("");
+  let t = ty=="sum"? MESES.reduce((a,m)=>a+f(m),0) : ty=="first"? f(MESES[0]) : f(MESES[MESES.length-1]);
+  return `<tr class="${st?'strong':''}"><td>${lb}</td>${cells}<td>${fmtP(t)}</td></tr>`;
+}).join("");
+document.getElementById("tablewrap").innerHTML="<table>"+thead+tbody+"</table>";
+
+document.getElementById("foot").innerHTML="Generado a partir del Informe de Caja "+ANIO+" · Valores en pesos y dólar MEP · Último mes cargado: "+last.mes+" "+ANIO;
+</script>
+</body>
+</html>
